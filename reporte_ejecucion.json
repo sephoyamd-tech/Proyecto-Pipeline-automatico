@@ -1,0 +1,150 @@
+{
+  "tiempo_ejecucion_segundos": 0.535255,
+  "diagnostico_inicial": {
+    "catalogo": {
+      "nombre_dataset": "Catálogo de Productos",
+      "total_registros": 50,
+      "total_columnas": 6,
+      "duplicados_exactos": 0,
+      "porcentaje_unicidad": 100.0,
+      "conteo_nulos": {
+        "id_producto": 0,
+        "nombre_producto": 0,
+        "categoria": 0,
+        "precio_base_mxn": 0,
+        "stock_minimo": 0,
+        "proveedor": 0
+      },
+      "porcentaje_nulos": {
+        "id_producto": 0.0,
+        "nombre_producto": 0.0,
+        "categoria": 0.0,
+        "precio_base_mxn": 0.0,
+        "stock_minimo": 0.0,
+        "proveedor": 0.0
+      },
+      "tipos_de_datos": {
+        "id_producto": "str",
+        "nombre_producto": "str",
+        "categoria": "str",
+        "precio_base_mxn": "float64",
+        "stock_minimo": "int64",
+        "proveedor": "str"
+      }
+    },
+    "tienda_fisica": {
+      "nombre_dataset": "Ventas Tienda Física",
+      "total_registros": 620,
+      "total_columnas": 9,
+      "duplicados_exactos": 20,
+      "porcentaje_unicidad": 96.77,
+      "conteo_nulos": {
+        "id_ticket": 0,
+        "fecha_venta": 0,
+        "sucursal": 0,
+        "id_producto": 0,
+        "cantidad": 0,
+        "precio_unitario": 0,
+        "monto_total_mxn": 32,
+        "id_cliente": 127,
+        "metodo_pago": 0
+      },
+      "porcentaje_nulos": {
+        "id_ticket": 0.0,
+        "fecha_venta": 0.0,
+        "sucursal": 0.0,
+        "id_producto": 0.0,
+        "cantidad": 0.0,
+        "precio_unitario": 0.0,
+        "monto_total_mxn": 5.16,
+        "id_cliente": 20.48,
+        "metodo_pago": 0.0
+      },
+      "tipos_de_datos": {
+        "id_ticket": "str",
+        "fecha_venta": "str",
+        "sucursal": "str",
+        "id_producto": "str",
+        "cantidad": "int64",
+        "precio_unitario": "float64",
+        "monto_total_mxn": "float64",
+        "id_cliente": "str",
+        "metodo_pago": "str"
+      }
+    },
+    "tienda_online": {
+      "nombre_dataset": "Ventas Tienda Web Online",
+      "total_registros": 600,
+      "total_columnas": 11,
+      "duplicados_exactos": 0,
+      "porcentaje_unicidad": 100.0,
+      "conteo_nulos": {
+        "order_id": 0,
+        "order_timestamp": 0,
+        "product_id": 0,
+        "units": 0,
+        "currency": 0,
+        "unit_price": 0,
+        "total_amount": 0,
+        "customer_email": 15,
+        "shipping_address": 77,
+        "order_status": 0,
+        "payment_gateway": 0
+      },
+      "porcentaje_nulos": {
+        "order_id": 0.0,
+        "order_timestamp": 0.0,
+        "product_id": 0.0,
+        "units": 0.0,
+        "currency": 0.0,
+        "unit_price": 0.0,
+        "total_amount": 0.0,
+        "customer_email": 2.5,
+        "shipping_address": 12.83,
+        "order_status": 0.0,
+        "payment_gateway": 0.0
+      },
+      "tipos_de_datos": {
+        "order_id": "str",
+        "order_timestamp": "object",
+        "product_id": "str",
+        "units": "int64",
+        "currency": "str",
+        "unit_price": "float64",
+        "total_amount": "float64",
+        "customer_email": "str",
+        "shipping_address": "str",
+        "order_status": "str",
+        "payment_gateway": "str"
+      }
+    }
+  },
+  "estadisticas_iqr": {
+    "q1": 1.0,
+    "q3": 3.0,
+    "iqr": 2.0,
+    "umbral_superior": 6.0,
+    "limite_capping": 6,
+    "registros_cappeados": 13
+  },
+  "estadisticas_escalamiento": {
+    "min_monto": 332.67,
+    "max_monto": 25308.66,
+    "tercil_1": 2069.07,
+    "tercil_2": 4214.12,
+    "total_procesados": 1084
+  },
+  "metricas_bd": {
+    "catalogo_registros": 50,
+    "transacciones_limpias_total": 1084,
+    "transacciones_fisicas_limpias": 562,
+    "transacciones_online_limpias": 522,
+    "cuarentena_errores_total": 272,
+    "desglose_cuarentena": {
+      "PRODUCTO_HUERFANO_NO_CATALOGADO": 120,
+      "CORREO_ELECTRONICO_INVALIDO": 90,
+      "DUPLICADO_EXACTO_POS": 40,
+      "VALOR_IMPOSIBLE_CANTIDAD_NO_POSITIVA": 22
+    }
+  }
+}

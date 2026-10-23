@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retail Nexus | Pipeline ETL Robusto con Zona de Cuarentena (LCS2)</title>
+  <meta name="description" content="Dashboard y Sistema ETL end-to-end de ingeniería de datos con zona de cuarentena para Retail y E-commerce Omnicanal. TecNM Campus Colima.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       TOP NAVBAR
+       ========================================================================= -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="brand-logo">
+          <i class="fa-solid fa-bolt-lightning text-accent"></i>
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">RETAIL NEXUS ETL</span>
+          <span class="brand-subtitle">OMNICANAL • GRUPO 1 (LCS2)</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="#arquitectura" class="nav-link"><i class="fa-solid fa-diagram-project"></i> Arquitectura</a>
+        <a href="#roles" class="nav-link"><i class="fa-solid fa-users-gear"></i> Roles</a>
+        <a href="#calidad" class="nav-link"><i class="fa-solid fa-chart-pie"></i> Calidad & IQR</a>
+        <a href="#datos" class="nav-link"><i class="fa-solid fa-database"></i> Explorador BD</a>
+        <a href="#estres" class="nav-link"><i class="fa-solid fa-shield-halved"></i> Pruebas Estrés</a>
+        <a href="#defensa" class="nav-link"><i class="fa-solid fa-chalkboard-user"></i> Defensa Oral</a>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="status-badge" id="live-status">
+          <span class="status-dot pulsing"></span>
+          <span>SISTEMA RESILIENTE</span>
+        </div>
+        <a href="REPORTE_PROYECTO_ETL_GRUPO1.pdf" target="_blank" class="btn btn-accent btn-sm">
+          <i class="fa-solid fa-file-pdf"></i> Reporte PDF
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- =========================================================================
+         HERO SECTION (WIX ELECTRICISTA MODERN STYLE)
+         ========================================================================= -->
+    <section class="hero-section">
+      <div class="hero-overlay"></div>
+      <div class="container hero-content">
+        <div class="hero-tag">
+          <i class="fa-solid fa-atom"></i> INGENIERÍA DE DATOS (ATD-2602) • UNIDAD 2: LIMPIEZA & PREPROCESAMIENTO
+        </div>
+        <h1 class="hero-title">
+          PIPELINE ETL ROBUSTO CON <span class="highlight-amber">ZONA DE CUARENTENA</span>
+        </h1>
+        <p class="hero-desc">
+          Arquitectura industrial en Python que ingiere datos crudos heterogéneos de retail omnicanal, diagnostica calidad, 
+          aplica imputación y Winsorizing IQR, valida con <strong>Pydantic v2</strong> y persiste en <strong>SQLite relacional</strong>, 
+          desviando anomalías sin detener el procesamiento (Principio <em>No Crash</em>).
+        </p>
+
+        <div class="hero-meta-strip">
+          <div class="meta-item">
+            <i class="fa-solid fa-building-columns text-accent"></i>
+            <span>TecNM Campus Colima</span>
+          </div>
+          <div class="meta-item">
+            <i class="fa-solid fa-user-tie text-accent"></i>
+            <span>Prof. Armando Román Gallardo Heredia</span>
+          </div>
+          <div class="meta-item">
+            <i class="fa-solid fa-store text-accent"></i>
+            <span>Retail & E-commerce (Venta física + Web)</span>
+          </div>
+        </div>
+
+        <!-- HIGH VOLTAGE KPI STRIP -->
+        <div class="kpi-grid">
+          <div class="kpi-card" data-glow="primary">
+            <div class="kpi-header">
+              <span class="kpi-label">TOTAL INGESTADO</span>
+              <i class="fa-solid fa-inbox kpi-icon"></i>
+            </div>
+            <div class="kpi-value" id="kpi-total">1,220</div>
+            <div class="kpi-footer">
+              <span class="badge badge-info">620 Físicas + 600 Web</span>
+            </div>
+          </div>
+
+          <div class="kpi-card" data-glow="success">
+            <div class="kpi-header">
+              <span class="kpi-label">TRANSACCIONES LIMPIAS</span>
+              <i class="fa-solid fa-circle-check kpi-icon text-success"></i>
+            </div>
+            <div class="kpi-value text-success" id="kpi-limpias">1,084</div>
+            <div class="kpi-footer">
+              <span class="badge badge-success"><i class="fa-solid fa-arrow-trend-up"></i> 88.85% Conformes</span>
+            </div>
+          </div>
+
+          <div class="kpi-card" data-glow="danger">
+            <div class="kpi-header">
+              <span class="kpi-label">ZONA DE CUARENTENA</span>
+              <i class="fa-solid fa-triangle-exclamation kpi-icon text-danger"></i>
+            </div>
+            <div class="kpi-value text-danger" id="kpi-cuarentena">136</div>
+            <div class="kpi-footer">
+              <span class="badge badge-danger">11.15% Aisladas con Causa</span>
+            </div>
+          </div>
+
+          <div class="kpi-card" data-glow="warning">
+            <div class="kpi-header">
+              <span class="kpi-label">OUTLIERS BOTS CAPPEADOS</span>
+              <i class="fa-solid fa-robot kpi-icon text-warning"></i>
+            </div>
+            <div class="kpi-value text-warning" id="kpi-bots">13</div>
+            <div class="kpi-footer">
+              <span class="badge badge-warning">IQR Capping (Máx 6 uds)</span>
+            </div>
+          </div>
+
+          <div class="kpi-card" data-glow="blue">
+            <div class="kpi-header">
+              <span class="kpi-label">DIVISAS USD HOMOLOGADAS</span>
+              <i class="fa-solid fa-money-bill-transfer kpi-icon text-cyan"></i>
+            </div>
+            <div class="kpi-value text-cyan" id="kpi-divisas">193</div>
+            <div class="kpi-footer">
+              <span class="badge badge-cyan">USD a MXN @ $19.50</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         MATRIZ DE ROLES (3 INTEGRANTES)
+         ========================================================================= -->
+    <section id="roles" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag"><i class="fa-solid fa-users"></i> ORGANIZACIÓN Y GOBERNANZA</span>
+          <h2 class="section-title">Matriz de Responsabilidades Técnicas (3 Integrantes)</h2>
+          <p class="section-subtitle">Distribución formal de roles de ingeniería de datos para la defensa técnica del proyecto.</p>
+        </div>
+
+        <div class="roles-grid">
+          <!-- INGENIERO 1 -->
+          <div class="role-card">
+            <div class="role-card-header">
+              <div class="role-avatar"><i class="fa-solid fa-chart-line"></i></div>
+              <div>
+                <span class="role-number">INGENIERO/A 1</span>
+                <h3 class="role-name">Calidad, Nulos y Outliers</h3>
+              </div>
+            </div>
+            <p class="role-desc">Responsable del diagnóstico cuantitativo inicial, clasificación teórica de ausencias y estabilización de varianza.</p>
+            <ul class="role-tasks">
+              <li><i class="fa-solid fa-check text-accent"></i> Perfilado inicial cuantitativo (completitud, unicidad y dtypes).</li>
+              <li><i class="fa-solid fa-check text-accent"></i> Clasificación MCAR vs MAR e imputación justificada con mediana.</li>
+              <li><i class="fa-solid fa-check text-accent"></i> Detección de outliers (IQR factor 1.5) y aplicación de Capping / Winsorizing.</li>
+            </ul>
+            <div class="role-deliverable">
+              <span class="deliverable-label">Entregable Clave:</span>
+              <span>Funciones de limpieza + Reporte comparativo antes/después.</span>
+            </div>
+          </div>
+
+          <!-- INGENIERO 2 -->
+          <div class="role-card">
+            <div class="role-card-header">
+              <div class="role-avatar"><i class="fa-solid fa-network-wired"></i></div>
+              <div>
+                <span class="role-number">INGENIERO/A 2</span>
+                <h3 class="role-name">Transformación e Integración</h3>
+              </div>
+            </div>
+            <p class="role-desc">Responsable de la fusión de fuentes heterogéneas, estandarización de variables y enriquecimiento con catálogo.</p>
+            <ul class="role-tasks">
+              <li><i class="fa-solid fa-check text-accent"></i> Fusión multifuente (CSV tienda física + JSON e-commerce).</li>
+              <li><i class="fa-solid fa-check text-accent"></i> Unificación de fechas ISO YYYY-MM-DD y conversión USD a MXN ($19.50).</li>
+              <li><i class="fa-solid fa-check text-accent"></i> Cruce con catálogo maestro, detección de huérfanos y Min-Max [0, 1].</li>
+            </ul>
+            <div class="role-deliverable">
+              <span class="deliverable-label">Entregable Clave:</span>
+              <span>Módulo de integración multifuente y normalización de variables.</span>
+            </div>
+          </div>
+
+          <!-- INGENIERO 3 -->
+          <div class="role-card">
+            <div class="role-card-header">
+              <div class="role-avatar"><i class="fa-solid fa-shield-halved"></i></div>
+              <div>
+                <span class="role-number">INGENIERO/A 3</span>
+                <h3 class="role-name">Validación, Resiliencia y BD</h3>
+              </div>
+            </div>
+            <p class="role-desc">Responsable de los contratos de datos con Pydantic, transaccionalidad relacional y pruebas de estrés.</p>
+            <ul class="role-tasks">
+              <li><i class="fa-solid fa-check text-accent"></i> Modelado de clases BaseModel con Pydantic y @field_validator.</li>
+              <li><i class="fa-solid fa-check text-accent"></i> Mecanismo de segregación con causa auditable hacia Zona de Cuarentena.</li>
+              <li><i class="fa-solid fa-check text-accent"></i> Persistencia ACID en SQLite (commit / rollback) y pruebas de inyección hostil.</li>
+            </ul>
+            <div class="role-deliverable">
+              <span class="deliverable-label">Entregable Clave:</span>
+              <span>Esquemas Pydantic + Script de carga relacional + Pruebas de estrés.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         DIAGRAMA DE ARQUITECTURA (CIRCUITO ETL DE 7 FASES)
+         ========================================================================= -->
+    <section id="arquitectura" class="section section-dark">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag"><i class="fa-solid fa-microchip"></i> INGENIERÍA DE CIRCUITOS ETL</span>
+          <h2 class="section-title">Arquitectura End-to-End con Zona de Cuarentena</h2>
+          <p class="section-subtitle">Las 7 Fases obligatorias del pipeline y la compuerta de tolerancia a fallos en producción.</p>
+        </div>
+
+        <div class="circuit-timeline">
+          <!-- FASE 1 -->
+          <div class="circuit-step">
+            <div class="circuit-badge">F1</div>
+            <div class="circuit-content">
+              <h4>Diagnóstico de Calidad Inicial</h4>
+              <p>Perfilado cuantitativo crudo: 127 nulos en cliente, 32 en totales, 20 duplicados de POS y 48 anomalías de correo.</p>
+            </div>
+          </div>
+
+          <!-- FASE 2 -->
+          <div class="circuit-step">
+            <div class="circuit-badge">F2</div>
+            <div class="circuit-content">
+              <h4>Manejo de Faltantes e Imputación</h4>
+              <p>Clasificación MCAR/MAR. Imputación de <code>'ANONIMO'</code> y recálculo determinista: <code>monto = cantidad * precio</code>.</p>
+            </div>
+          </div>
+
+          <!-- FASE 3 -->
+          <div class="circuit-step">
+            <div class="circuit-badge">F3</div>
+            <div class="circuit-content">
+              <h4>Tratamiento Outliers IQR (Capping)</h4>
+              <p>IQR = 2.0. Umbral Q3 + 1.5*IQR = 6 uds. Winsorizing de 13 compras gigantes de bots sin pérdida de registros.</p>
+            </div>
+          </div>
+
+          <!-- FASE 4 -->
+          <div class="circuit-step">
+            <div class="circuit-badge">F4</div>
+            <div class="circuit-content">
+              <h4>Integración, Fechas y Huérfanos</h4>
+              <p>Fechas ISO YYYY-MM-DD, conversión USD a MXN ($19.50) y cruce con catálogo. 60 llaves huérfanas derivadas a cuarentena.</p>
+            </div>
+          </div>
+
+          <!-- FASE 5 -->
+          <div class="circuit-step">
+            <div class="circuit-badge">F5</div>
+            <div class="circuit-content">
+              <h4>Escalamiento y Discretización</h4>
+              <p>Normalización Min-Max [0, 1] y discretización en 3 terciles de negocio: <em>Bajo</em>, <em>Medio</em> y <em>Alto</em>.</p>
+            </div>
+          </div>
+
+          <!-- FASE 6 -->
+          <div class="circuit-step circuit-step-highlight">
+            <div class="circuit-badge bg-danger">F6</div>
+            <div class="circuit-content">
+              <h4>Compuerta Pydantic & Cuarentena</h4>
+              <p>Validación estricta con decoradores <code>@field_validator</code>. Intercepción de <code>ValidationError</code> con trazabilidad.</p>
+            </div>
+          </div>
+
+          <!-- FASE 7 -->
+          <div class="circuit-step circuit-step-success">
+            <div class="circuit-badge bg-success">F7</div>
+            <div class="circuit-content">
+              <h4>Persistencia Relacional SQLite</h4>
+              <p>Carga transaccional ACID con <code>commit()</code> y <code>rollback()</code> en <code>transacciones_limpias</code> y <code>cuarentena_errores</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         LABORATORIO DE CALIDAD Y GRÁFICOS INTERACTIVOS
+         ========================================================================= -->
+    <section id="calidad" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag"><i class="fa-solid fa-chart-simple"></i> DIAGNÓSTICO ESTADÍSTICO</span>
+          <h2 class="section-title">Laboratorio Comparativo de Calidad (Antes vs Después)</h2>
+          <p class="section-subtitle">Evidencia empírica y visual del preprocesamiento estadístico aplicado.</p>
+        </div>
+
+        <div class="graphics-grid">
+          <div class="graphic-card">
+            <div class="graphic-card-header">
+              <h3><i class="fa-solid fa-chart-column text-accent"></i> Detección y Capping de Outliers con IQR</h3>
+              <span class="badge badge-warning">Winsorizing</span>
+            </div>
+            <div class="graphic-img-container">
+              <img src="grafico_outliers_iqr.png" alt="Tratamiento de Outliers con IQR" class="responsive-graphic">
+            </div>
+            <p class="graphic-caption">
+              <strong>Justificación:</strong> Los bots con compras de 99 y 500 unidades distorsionaban la varianza. Con el umbral superior de 6 unidades ($Q_3 + 1.5 \times \text{IQR}$), se estabiliza la distribución conservando el registro histórico.
+            </p>
+          </div>
+
+          <div class="graphic-card">
+            <div class="graphic-card-header">
+              <h3><i class="fa-solid fa-pie-chart text-cyan"></i> Segmentación Omnicanal y Terciles</h3>
+              <span class="badge badge-cyan">Min-Max [0, 1]</span>
+            </div>
+            <div class="graphic-img-container">
+              <img src="grafico_canales_segmentos.png" alt="Canales y Segmentos" class="responsive-graphic">
+            </div>
+            <p class="graphic-caption">
+              <strong>Distribución:</strong> Integración de 562 ventas físicas (51.8%) y 522 online (48.2%), con discretización en terciles estadísticos perfectamente balanceados.
+            </p>
+          </div>
+
+          <div class="graphic-card full-width">
+            <div class="graphic-card-header">
+              <h3><i class="fa-solid fa-triangle-exclamation text-danger"></i> Auditoría de Causas en Zona de Cuarentena (136 Registros)</h3>
+              <span class="badge badge-danger">100% Auditable</span>
+            </div>
+            <div class="graphic-img-container">
+              <img src="grafico_cuarentena_motivos.png" alt="Causas de Cuarentena" class="responsive-graphic">
+            </div>
+            <p class="graphic-caption">
+              <strong>Desglose:</strong> 60 productos huérfanos (violación de integridad referencial), 45 correos inválidos/nulos en web, 20 duplicados exactos de POS y 11 valores imposibles ($\le 0$).
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         EXPLORADOR INTERACTIVO DE BASE DE DATOS
+         ========================================================================= -->
+    <section id="datos" class="section section-dark">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag"><i class="fa-solid fa-table"></i> BASE DE DATOS RELACIONAL</span>
+          <h2 class="section-title">Explorador Interactivo de Tablas en SQLite</h2>
+          <p class="section-subtitle">Visualice y filtre las tablas <code>transacciones_limpias</code> y <code>cuarentena_errores</code> persistidas en <code>retail_omnicanal.db</code>.</p>
+        </div>
+
+        <!-- TABS CONTROLLER -->
+        <div class="tab-controls">
+          <button class="tab-btn active" data-tab="tab-limpias">
+            <i class="fa-solid fa-circle-check text-success"></i> Transacciones Limpias (1,084)
+          </button>
+          <button class="tab-btn" data-tab="tab-cuarentena">
+            <i class="fa-solid fa-triangle-exclamation text-danger"></i> Zona de Cuarentena (136)
+          </button>
+          <button class="tab-btn" data-tab="tab-catalogo">
+            <i class="fa-solid fa-tags text-accent"></i> Catálogo Maestro (50)
+          </button>
+        </div>
+
+        <!-- SEARCH & FILTER BAR -->
+        <div class="filter-bar">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="table-search" placeholder="Buscar por ID, producto, cliente, correo o motivo...">
+          </div>
+          <div class="filter-actions">
+            <select id="channel-filter" class="custom-select">
+              <option value="ALL">Todos los canales</option>
+              <option value="FISICO">Físico (POS)</option>
+              <option value="ONLINE">Online (Web)</option>
+            </select>
+            <select id="segment-filter" class="custom-select">
+              <option value="ALL">Todos los segmentos</option>
+              <option value="Bajo">Segmento Bajo</option>
+              <option value="Medio">Segmento Medio</option>
+              <option value="Alto">Segmento Alto</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TAB 1: LIMPIAS -->
+        <div class="tab-content active" id="tab-limpias">
+          <div class="table-responsive">
+            <table class="data-table" id="tabla-limpias">
+              <thead>
+                <tr>
+                  <th>ID Transacción</th>
+                  <th>Fecha</th>
+                  <th>Canal</th>
+                  <th>Producto</th>
+                  <th>Categoría</th>
+                  <th>Cant.</th>
+                  <th>Precio MXN</th>
+                  <th>Monto Total</th>
+                  <th>Segmento</th>
+                  <th>Método Pago</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-limpias">
+                <!-- Se llena dinámicamente con app.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-bar" id="pagination-limpias"></div>
+        </div>
+
+        <!-- TAB 2: CUARENTENA -->
+        <div class="tab-content" id="tab-cuarentena">
+          <div class="table-responsive">
+            <table class="data-table" id="tabla-cuarentena">
+              <thead>
+                <tr>
+                  <th>ID Origen</th>
+                  <th>Fuente</th>
+                  <th>Motivo de Rechazo en Cuarentena</th>
+                  <th>Campo Erróneo</th>
+                  <th>Valor Inválido</th>
+                  <th>Inspección JSON</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-cuarentena">
+                <!-- Se llena dinámicamente con app.js -->
+              </tbody>
+            </table>
+          </div>
+          <div class="pagination-bar" id="pagination-cuarentena"></div>
+        </div>
+
+        <!-- TAB 3: CATÁLOGO -->
+        <div class="tab-content" id="tab-catalogo">
+          <div class="table-responsive">
+            <table class="data-table" id="tabla-catalogo">
+              <thead>
+                <tr>
+                  <th>ID Producto</th>
+                  <th>Nombre Producto</th>
+                  <th>Categoría</th>
+                  <th>Precio Base MXN</th>
+                  <th>Stock Mínimo</th>
+                  <th>Proveedor</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-catalogo">
+                <!-- Se llena dinámicamente con app.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         CONSOLA DE PRUEBAS DE ESTRÉS (LIVE TEST RUNNER)
+         ========================================================================= -->
+    <section id="estres" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag"><i class="fa-solid fa-terminal"></i> BATERÍA DE PRUEBAS DE ESTRÉS</span>
+          <h2 class="section-title">Consola de Inyección de Fallos y Tolerancia Hostil</h2>
+          <p class="section-subtitle">Demostración en vivo de resiliencia: ataque SQL, XSS en correos, fechas corruptas y fallos de rollback.</p>
+        </div>
+
+        <div class="terminal-card">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+            </div>
+            <span class="terminal-title">python -m unittest tests/stress_test.py (Ingeniero 3)</span>
+            <button class="btn btn-sm btn-accent" id="btn-run-tests">
+              <i class="fa-solid fa-play"></i> Ejecutar Tests en Vivo
+            </button>
+          </div>
+          <div class="terminal-body" id="terminal-output">
+            <span class="term-line term-dim">Esperando comando... Haga clic en "Ejecutar Tests en Vivo" para disparar la suite unitaria.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         CENTRO DE DEFENSA ORAL TÉCNICA
+         ========================================================================= -->
+    <section id="defensa" class="section section-dark">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag"><i class="fa-solid fa-graduation-cap"></i> PREPARACIÓN PARA DEFENSA EN VIVO</span>
+          <h2 class="section-title">Simulador de Defensa Oral y Preguntas del Docente</h2>
+          <p class="section-subtitle">Respuestas técnicas y fundamentos teóricos clave estructurados por cada rol de ingeniería.</p>
+        </div>
+
+        <div class="qa-grid">
+          <!-- PREGUNTA ING 1 -->
+          <div class="qa-card">
+            <div class="qa-role-badge">Ingeniero/a 1 • Calidad & Outliers</div>
+            <h4 class="qa-question">¿Por qué imputaron los faltantes con la mediana y no con la media aritmética?</h4>
+            <div class="qa-answer">
+              <strong>Respuesta Técnica:</strong> Porque la media muestral $\bar{x}$ se ve severamente distorsionada por valores atípicos extremos (como las órdenes de bots con 500 unidades y montos de millones de pesos), elevándose a <strong>$16,586.74</strong>. La mediana ($Me = \$3,506.37$) es un estimador robusto no paramétrico que coincide con el percentil 50 real del consumidor típico.
+            </div>
+          </div>
+
+          <!-- PREGUNTA ING 2 -->
+          <div class="qa-card">
+            <div class="qa-role-badge">Ingeniero/a 2 • Integración & Divisas</div>
+            <h4 class="qa-question">¿Cómo trataron los productos que no existían en el catálogo maestro?</h4>
+            <div class="qa-answer">
+              <strong>Respuesta Técnica:</strong> Se aplicó el principio de integridad referencial. Las compras con códigos <code>PROD-9xx</code> y <code>PROD-8xx</code> no catalogados fueron aisladas y derivadas a la tabla <code>cuarentena_errores</code> con la causa <code>PRODUCTO_HUERFANO_NO_CATALOGADO</code>, evitando registros huérfanos sin colapsar el pipeline.
+            </div>
+          </div>
+
+          <!-- PREGUNTA ING 3 -->
+          <div class="qa-card">
+            <div class="qa-role-badge">Ingeniero/a 3 • Pydantic & Resiliencia</div>
+            <h4 class="qa-question">¿Qué ocurre si un registro inyecta SQL malicioso o un formato corrupto?</h4>
+            <div class="qa-answer">
+              <strong>Respuesta Técnica:</strong> Operamos bajo el principio <em>No Crash</em>. El bloque <code>try ... except ValidationError</code> captura cualquier violación del esquema Pydantic antes de tocar la base de datos. Además, la persistencia utiliza sentencias parametrizadas y transacciones atómicas con <code>conn.rollback()</code> ante cualquier anomalía.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================================================
+       MODAL DE INSPECCIÓN JSON CRUDA
+       ========================================================================= -->
+  <div class="modal-overlay" id="json-modal">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="fa-solid fa-bug text-danger"></i> Inspección de Anomalía en Cuarentena
+        </div>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-meta" id="modal-meta-info"></div>
+        <pre class="json-viewer" id="modal-json-content"></pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-sm" id="modal-close-footer">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       FOOTER
+       ========================================================================= -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <div class="footer-brand">
+          <i class="fa-solid fa-bolt-lightning text-accent"></i> RETAIL NEXUS ETL
+        </div>
+        <p class="footer-copy">TecNM Campus Colima • Departamento de Sistemas y Computación • Semestre Ago-Dic 2026</p>
+      </div>
+      <div class="footer-links">
+        <a href="REGLAS_DE_NEGOCIO.md" class="footer-link"><i class="fa-solid fa-file-contract"></i> REGLAS_DE_NEGOCIO.md</a>
+        <a href="REPORTE_PROYECTO_ETL_GRUPO1.pdf" target="_blank" class="footer-link"><i class="fa-solid fa-file-pdf"></i> Reporte PDF</a>
+        <a href="pipeline.py" class="footer-link"><i class="fa-brands fa-python"></i> pipeline.py</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="web_data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
