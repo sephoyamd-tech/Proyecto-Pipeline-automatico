@@ -51,8 +51,11 @@ def exportar():
 
     with open("web_data.json", "w", encoding="utf-8") as f:
         json.dump(payload, f, ensure_ascii=False)
+
+    with open("web_data.js", "w", encoding="utf-8") as f:
+        f.write("window.WEB_DATA = " + json.dumps(payload, ensure_ascii=False) + ";")
         
-    print(f"Exportado web_data.json: {len(transacciones_limpias)} limpias, {len(cuarentena_errores)} en cuarentena.")
+    print(f"Exportado web_data.json y web_data.js: {len(transacciones_limpias)} limpias, {len(cuarentena_errores)} en cuarentena.")
 
 if __name__ == "__main__":
     exportar()
